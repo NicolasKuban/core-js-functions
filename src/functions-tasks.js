@@ -18,8 +18,15 @@
  *
  */
 function getCurrentFunctionName() {
-  throw new Error('Not implemented');
+  const str = getCurrentFunctionName.toString();
+  let nameFunc;
+  if (str.startsWith('function')) {
+    nameFunc = str.slice('function '.length, str.indexOf('('));
+  }
+  return nameFunc;
 }
+
+// console.log(getCurrentFunctionName())
 
 /**
  * Returns the body of the function passed as argument.
@@ -32,9 +39,11 @@ function getCurrentFunctionName() {
  *   getFunctionBody(hiHello) => "function hiHello() { console.log('hello world'); }"
  *
  */
-function getFunctionBody(/* func */) {
-  throw new Error('Not implemented');
+function getFunctionBody(func) {
+  return func ? func.toString() : '';
 }
+// function hiHello() { console.log('hello world'); }
+// console.log(getFunctionBody()) // => "function hiHello() { console.log('hello world'); }"
 
 /**
  * Returns the array where each element is the count of function arguments.
@@ -50,9 +59,15 @@ function getFunctionBody(/* func */) {
  *  ]) => [0, 1, 2]
  *
  */
-function getArgumentsCount(/* funcs */) {
-  throw new Error('Not implemented');
+function getArgumentsCount(funcs) {
+  return funcs.map((func) => func.length);
 }
+
+// console.log(getArgumentsCount([
+//       function(){ console.log('hello world'); },
+//       function myFunc(x, y) { return [x,y]; },
+//       (a, b) => a * b
+//     ])) //=> [0, 1, 2]
 
 /**
  * Returns the math power function with the specified exponent
@@ -70,8 +85,8 @@ function getArgumentsCount(/* funcs */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return (value) => value ** exponent;
 }
 
 /**
