@@ -102,9 +102,18 @@ function getPowerFunction(exponent) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...args) {
+  const temp = args.reverse();
+  const newArgs = Array(3)
+    .fill(0)
+    .map((value, index) => temp[index] || value, temp)
+    .reverse();
+  return (x) => {
+    return newArgs[0] * x ** 2 + newArgs[1] * x + newArgs[2];
+  };
 }
+
+// console.log(getPolynom(1, -3)(2));
 
 /**
  * Memoizes passed function and returns function
@@ -120,8 +129,9 @@ function getPolynom() {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  const result = func();
+  return () => result;
 }
 
 /**
@@ -139,9 +149,27 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  let counter = attempts;
+  return () => {
+    while (counter !== -1) {
+      try {
+        return func();
+      } catch {
+        counter -= 1;
+      }
+    }
+    return undefined;
+  };
 }
+
+// let attempt = 0;
+
+// const retryer = retry(() => {
+//   if (++attempt % 2) throw new Error('test');
+//   else return attempt;
+// }, 17);
+// console.log(retryer());
 
 /**
  * Returns the logging wrapper for the specified method,
@@ -166,9 +194,54 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  const funcName = /function ([^(]*)/.exec(func.toString())[1];
+  let text;
+  return (...args) => {
+    text = `${funcName}(${JSON.stringify(args)
+      .toString()
+      .slice(1, -1)}) starts`;
+    logFunc(text);
+    const result = func(...args);
+    text = `${funcName}(${JSON.stringify(args).toString().slice(1, -1)}) ends`;
+    logFunc(text);
+    return result;
+  };
 }
+
+// let log = '';
+// const logFunc = (text) => {
+//   log += `${text}\n`;
+//   return log;
+// };
+// const cosLogger = logger(Math.cos, logFunc);
+
+// console.log(cosLogger(Math.PI));
+// console.log(log);
+
+// let isCalling = false;
+// let log = '';
+// const assert = require('assert');
+
+// const fn = function testLogger(param, index) {
+//   assert.equal(
+//     log,
+//     'testLogger(["expected","test",1],0) starts\n',
+//     'logger function shoud log the start of specified function before calling'
+//   );
+//   isCalling = true;
+//   return param[index];
+// };
+
+// const logFunc = (text) => {
+//   log += `${text}\n`;
+//   return log;
+// };
+// const loggers = logger(fn, logFunc);
+
+// const actual = loggers(['expected', 'test', 1], 0);
+// console.log(actual);
+// console.log(log);
 
 /**
  * Return the function with partial applied arguments
@@ -183,9 +256,18 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  return (...args) => {
+    return fn(...args1, ...args);
+  };
 }
+// const fn = function (x1, x2, x3, x4) {
+//   return x1 + x2 + x3 + x4;
+// };
+// console.log(partialUsingArguments(fn, 'a')('b', 'c', 'd')); // => 'abcd'
+// console.log(partialUsingArguments(fn, 'a', 'b')('c', 'd')); // => 'abcd'
+// console.log(partialUsingArguments(fn, 'a', 'b', 'c')('d')); // => 'abcd'
+// console.log(partialUsingArguments(fn, 'a', 'b', 'c', 'd')()); // => 'abcd'
 
 /**
  * Returns the id generator function that returns next integer starting
@@ -204,9 +286,22 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let counter = startFrom;
+  return () => {
+    counter += 1;
+    return counter - 1;
+  };
 }
+
+// const getId4 = getIdGeneratorFunction(4);
+// const getId10 = getIdGeneratorFunction(10);
+// console.log(getId4()); // => 4
+// console.log(getId10()); // => 10
+// console.log(getId4()); // => 5
+// console.log(getId4()); // => 6
+// console.log(getId4()); // => 7
+// console.log(getId10()); // => 11
 
 module.exports = {
   getCurrentFunctionName,
